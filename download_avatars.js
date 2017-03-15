@@ -1,36 +1,39 @@
 var request = require('request');
-
-
-console.log('Welcome to the GitHub Avatar Downloader!');
+var fs = require ('fs')
 
 var GITHUB_USER = 'BrandonGA';
 var GITHUB_TOKEN = 'b5fdb84f8ea04bb86ce1a56a671e8c3fd3aaedce';
+var Githubrepo = 'facebook'
+var GitHubname = 'react'
+
+let urlDirectory = []
 
 
+function getRepoContributors(repoOwner, repoName, cb) {
 
-  function getRepoContributors(repoOwner, repoName, cb) {
   var requestURL = 'https://'+ GITHUB_USER + ':' + GITHUB_TOKEN +
   '@api.github.com/repos/' + repoOwner + '/' + repoName + '/contributors';
-
     var options = {
-    url: requestURL,
-    headers: {
-      'User-Agent': 'request'
-     }
+      url: requestURL,
+      headers: {
+        'User-Agent': 'request'
+      }
     };
 
-
-  request.get(options , function (error, response, body) {
-    console.log('error:', error); // Print the error if one occurred
-    console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received //
-    // console.log('body:', JSON.parse(body)[0].avatar_url);
-    JSON.parse(body).forEach(function(contributor) {
-      console.log(contributor.avatar_url)
-    });
+    request.get(options , function (error, response, body) {
+    var contributors = JSON.parse(body)
+    for (url of contributors) {
+      urlDirectory.push(url['avatar_url'])
+    }
+    cb()
   })
-  console.log(options, requestURL)
 }
-getRepoContributors('jquery', 'jquery')
 
+function downloadImageByURL() {
+  for (link in urlDirectory) {
+    request.get(urlDirectory[link])
+    .pipe(fs.createWriteStream('./avatars/' + link + '.jpg'))
+  }
+}
 
-
+getRepoContributors("facebook", "react", downloadImageByURL)
