@@ -1,3 +1,4 @@
+
 var request = require('request');
 var fs = require ('fs')
 
@@ -36,4 +37,4 @@ function downloadImageByURL() {
   }
 }
 
-getRepoContributors("facebook", "react", downloadImageByURL)
+getRepoContributors(process.argv[2], process.argv[3], downloadImageByURL)
